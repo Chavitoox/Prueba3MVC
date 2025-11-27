@@ -1,0 +1,53 @@
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+/**
+ *
+ * @author Informatica
+ */
+public class Conexion {
+    private static final String URL = "jdbc:mysql://localhost:3306/mibase";
+    private static final String USER = "root";
+    private static final String PASSWORD = ""; // Ajusta si tienes contraseña
+
+    /**
+     * Obtiene una conexión activa a la base de datos.
+     * @return Objeto Connection si es exitosa, null en caso de error.
+     */
+    public static Connection getConnection() {
+        Connection connection = null;
+        try {
+            // Cargar el driver JDBC (no siempre necesario en versiones recientes de Java/JDBC)
+            // Class.forName("com.mysql.cj.jdbc.Driver"); 
+            connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            System.out.println("Conexión a 'mibase' exitosa.");
+        } catch (SQLException e) {
+            System.err.println("Error al conectar con la base de datos: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return connection;
+    }
+
+    /**
+     * Cierra el objeto Connection.
+     * @param conn La conexión a cerrar.
+     */
+    public static void close(Connection conn) {
+        try {
+            if (conn != null) {
+                conn.close();
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al cerrar la conexión: " + e.getMessage());
+        }
+    }
+
+    // Método de ejemplo para verificar la conexión
+    public static void main(String[] args) {
+        Connection conn = getConnection();
+        if (conn != null) {
+            close(conn);
+        }
+    }
+}
