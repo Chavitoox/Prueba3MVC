@@ -75,4 +75,31 @@ public class controladorPrueba {
         }
         return seguro;
     }
+
+public boolean eliminarProducto(Seguro seguro) {
+    String sql = "DELETE FROM producto WHERE id = ?";
+    Connection conn = null;
+    PreparedStatement ps = null;
+
+    try {
+        conn = Conexion.getConnection();
+        ps = conn.prepareStatement(sql);
+
+        ps.setInt(1, seguro.getId());
+
+        int filasAfectadas = ps.executeUpdate();
+        return filasAfectadas > 0;
+
+    } catch (SQLException e) {
+        System.err.println("Error al eliminar producto: " + e.getMessage());
+        return false;
+    } finally {
+        try {
+            if (ps != null) ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        Conexion.close(conn);
+    }
+}
 }
