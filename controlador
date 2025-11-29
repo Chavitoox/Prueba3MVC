@@ -1,5 +1,8 @@
-import bd.Conexion;
-import modelo.Producto;
+package controlador;
+
+
+import bd.conexionBD;
+import Modelo.Seguro;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -8,26 +11,25 @@ import java.util.List;
  *
  * @author Central Gamer
  */
-public class controladorPrueba {
-    public boolean agregarProducto(Producto producto) {
-        String sql = "INSERT INTO producto (id, nombre, descripcionGeneral,descripcionDetallada,porcentajeCobertura) VALUES (?, ?, ? , ?, ?)";
+public class controlador {
+    public boolean agregarSeguro(Seguro seguro) {
+        String sql = "INSERT INTO Seguro (nombre, descripcionGeneral,descripcionDetallada,porcentajeCobertura) VALUES (?, ?, ? , ?)";
         Connection conn = null;
         PreparedStatement ps = null;
 
         try {
-            conn = Conexion.getConnection();
+            conn = conexionBD.getConnection();
             ps = conn.prepareStatement(sql);
-            ps.setInt(1, seguro.getId());
-            ps.setString(2, seguro.getNombre());
-            ps.setString(3, seguro.getdescripcionGeneral());
-            ps.setString(4, seguro.getdescripcionDetallada());
-            ps.setDouble(5,seguro.getporcentajeCobertura());
+            ps.setString(1, seguro.getNombre());
+            ps.setString(2, seguro.getDescripcionGeneral());
+            ps.setString(3, seguro.getDescripcionDetallada());
+            ps.setDouble(4,seguro.getPorcentajeCobertura());
 
             int filasAfectadas = ps.executeUpdate();
             return filasAfectadas > 0;
 
         } catch (SQLException e) {
-            System.err.println("Error al agregar producto: " + e.getMessage());
+            System.err.println("Error al agregar Seguro: " + e.getMessage());
             return false;
         } finally {
             try {
@@ -35,35 +37,35 @@ public class controladorPrueba {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            Conexion.close(conn);
+            conexionBD.close(conn);
         }
     }
 
-    public List<Seguro> listarProductos() {
+    public List<Seguro> listarSeguros() {
         List<Seguro> seguro = new ArrayList<>();
-        String sql = "SELECT id, nombre, descripcionGeneral , descripcionDetallada, porcentajeCobertura FROM seguro ORDER BY id DESC";
+        String sql = "SELECT id, nombre, descripcionGeneral , descripcionDetallada, porcentajeCobertura FROM Seguro ORDER BY id DESC";
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
 
         try {
-            conn = Conexion.getConnection();
+            conn = conexionBD.getConnection();
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
 
             while (rs.next()) {
-                Seguro p = new seguro(
+                Seguro s = new Seguro(
                         rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("descripcionGeneral"),
                         rs.getString("descripcionDetallada"),
                         rs.getDouble("porcentajeCobertura")
                 );
-                seguro.add(p);
+                seguro.add(s);
             }
 
         } catch (SQLException e) {
-            System.err.println("Error al listar seguros: " + e.getMessage());
+            System.err.println("Error al listar Seguros: " + e.getMessage());
         } finally {
             try {
                 if (rs != null) rs.close();
@@ -71,62 +73,8 @@ public class controladorPrueba {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            Conexion.close(conn);
+            conexionBD.close(conn);
         }
         return seguro;
     }
-
-public boolean eliminarProducto(Seguro seguro) {
-    String sql = "DELETE FROM producto WHERE id = ?";
-    Connection conn = null;
-    PreparedStatement ps = null;
-
-    try {
-        conn = Conexion.getConnection();
-        ps = conn.prepareStatement(sql);
-
-        ps.setInt(1, seguro.getId());
-
-        int filasAfectadas = ps.executeUpdate();
-        return filasAfectadas > 0;
-
-    } catch (SQLException e) {
-        System.err.println("Error al eliminar producto: " + e.getMessage());
-        return false;
-    } finally {
-        try {
-            if (ps != null) ps.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        Conexion.close(conn);
-    }
-}
-public boolean actualizarProducto(Producto producto) {
-    String sql = "UPDATE producto SET nombre = ?, descripcionGeneral = ?, descripcionDetallada = ?, porcentajeCobertura = ? WHERE id = ?";
-    Connection conn = null;
-    PreparedStatement ps = null;
-
-    try {
-        conn = Conexion.getConnection();
-        ps = conn.prepareStatement(sql);
-
-        ps.setString(1, producto.getNombre());
-        ps.setString(2, producto.getDescripcionGeneral());
-        ps.setString(3, producto.getDescripcionDetallada());
-        ps.setDouble(4, producto.getPorcentajeCobertura());
-        ps.setInt(5, producto.getId()); // ← Se usa el ID para identificar la fila
-
-        int filasAfectadas = ps.executeUpdate();
-        return filasAfectadas > 0;
-
-    } catch (SQLException e) {
-        System.err.println("Error al actualizar producto: " + e.getMessage());
-        return false;
-    } finally {
-        try { if (ps != null) ps.close(); } catch (SQLException e) {}
-        Conexion.close(conn);
-    }
-}
-
 }
