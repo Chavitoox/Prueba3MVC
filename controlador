@@ -77,4 +77,56 @@ public class controlador {
         }
         return seguro;
     }
+public boolean eliminarProducto(Seguro seguro) {
+    String sql = "DELETE FROM producto WHERE id = ?";
+    Connection conn = null;
+    PreparedStatement ps = null;
+
+    try {
+        conn = Conexion.getConnection();
+        ps = conn.prepareStatement(sql);
+
+        ps.setInt(1, seguro.getId());
+
+        int filasAfectadas = ps.executeUpdate();
+        return filasAfectadas > 0;
+
+    } catch (SQLException e) {
+        System.err.println("Error al eliminar producto: " + e.getMessage());
+        return false;
+    } finally {
+        try {
+            if (ps != null) ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        Conexion.close(conn);
+    }
+}
+public boolean actualizarProducto(Seguro seguro) {
+    String sql = "UPDATE producto SET nombre = ?, descripcionGeneral = ?, descripcionDetallada = ?, porcentajeCobertura = ? WHERE id = ?";
+    Connection conn = null;
+    PreparedStatement ps = null;
+
+    try {
+        conn = Conexion.getConnection();
+        ps = conn.prepareStatement(sql);
+
+        ps.setString(1, seguro.getNombre());
+        ps.setString(2, seguro.getDescripcionGeneral());
+        ps.setString(3, seguro.getDescripcionDetallada());
+        ps.setDouble(4, seguro.getPorcentajeCobertura());
+        ps.setInt(5, seguro.getId()); // ← Se usa el ID para identificar la fila
+
+        int filasAfectadas = ps.executeUpdate();
+        return filasAfectadas > 0;
+
+    } catch (SQLException e) {
+        System.err.println("Error al actualizar producto: " + e.getMessage());
+        return false;
+    } finally {
+        try { if (ps != null) ps.close(); } catch (SQLException e) {}
+        Conexion.close(conn);
+    }
+}
 }
